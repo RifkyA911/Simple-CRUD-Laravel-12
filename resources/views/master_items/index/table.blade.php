@@ -10,6 +10,7 @@
             <th>Harga Jual</th>
             <th>Supplier</th>
             <th>View</th>
+            {{-- <th>Action</th> --}}
         </tr>
     </thead>
     <tbody>
