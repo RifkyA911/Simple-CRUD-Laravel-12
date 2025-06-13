@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KategoriItem;
 use App\Models\MasterItem;
 use Illuminate\Http\Request;
 
@@ -23,28 +24,49 @@ class MasterItemsController extends Controller
 
         if (!empty($kode)) $data_search = $data_search->where('kode', $kode);
         if (!empty($nama)) $data_search = $data_search->where('nama', 'LIKE', '%' . $nama . '%');
-        if (!empty($hargamin)) $data_search = $data_search->where('harga_beli', '>=', $hargamin)->where('harga_beli', '<=', $hargamax);
+        if (!empty($hargamin)) {
+            $data_search = $data_search->where('harga_beli', '>=', $hargamin);
+            if (!empty($hargamax)) {
+                $data_search = $data_search->where('harga_beli', '<=', $hargamax);
+            }
+        } else if (!empty($hargamax)) {
+            $data_search = $data_search->where('harga_beli', '<=', $hargamax);
+        }
 
         $data_search = $data_search->select('kode', 'nama', 'jenis', 'harga_beli', 'laba', 'supplier')->orderBy('id')->get();
 
 
-        return json_encode([
+        return response()->json([
             'status' => 200,
             'data' => $data_search
+        ]);
+
+    }
+
+    public function getSupplier(Request $request){
+        $data = MasterItem::where('supplier', $request->supplier)->get();
+        return response()->json([
+            'status' => 200,
+            'data' => $data
         ]);
     }
 
     public function formView($method, $id = 0)
     {
+        $kategoriItems = KategoriItem::all();
         if ($method == 'new') {
             $item = [];
         } else {
-            $item = MasterItem::find($id);
+            $item = MasterItem::with('kategoriItems')->find($id);
         }
-        $data['item'] = $item;
-        $data['method'] = $method;
-        return view('master_items.form.index', $data);
+
+        return view('master_items.form.index', [
+            'item' => $item,
+            'method' => $method,
+            'kategoriItems' => $kategoriItems,
+        ]);
     }
+
 
     public function singleView($kode)
     {
@@ -65,13 +87,32 @@ class MasterItemsController extends Controller
             $kode = $data_item->kode;
         }
 
+
         $data_item->nama = $request->nama;
         $data_item->harga_beli = $request->harga_beli;
         $data_item->laba = $request->laba;
         $data_item->kode = $kode;
         $data_item->supplier = $request->supplier;
         $data_item->jenis = $request->jenis;
+
+        if($request->hasFile('picture')) {
+            $file = $request->file('picture');
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            $file->move(public_path('images'), $filename);
+            $data_item->picture = $filename;
+        }
+
         $data_item->save();
+
+        if ($request->has('kategori_item_ids')) {
+            if ($method == 'new') {
+                $data_item->kategoriItems()->attach($request->kategori_item_ids);
+            } else {
+                $data_item->kategoriItems()->sync($request->kategori_item_ids);
+            }
+        }
+
 
         return redirect('master-items');
     }
