@@ -5,7 +5,8 @@
     @endif
     <div class="form-group">
         <label>Picture</label>
-        <input type="file" class="form-control" name="picture" value="{{ $item->picture ?? '' }}">
+        <input type="file" class="form-control" name="picture" required="{{ $method === 'edit' }}"
+            value="{{ $item->picture ?? '' }}">
     </div>
     @if ($method == 'edit')
         <div class="form-group">
@@ -28,19 +29,6 @@
     <div class="form-group">
         <label>Laba (dalam persen)</label>
         <input type="number" class="form-control" name="laba" required value="{{ $item->laba ?? '' }}">
-    </div>
-
-    <div class="form-group">
-        <label>Kategori</label>
-        <select name="kategori" class="form-control" required>
-            <option value="">--Pilih--</option>
-            @foreach ($kategoriItems as $kategori)
-                <option value="{{ $kategori->id }}" @if (($item->kategori ?? '') == $kategori->id) selected @endif>
-                    {{ $kategori->nama }}
-                </option>
-            @endforeach
-        </select>
-
     </div>
 
     @php $selected = $item->supplier ?? ''; @endphp
