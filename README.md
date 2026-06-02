@@ -2,16 +2,16 @@
 
 # Simple CRUD — Laravel 12
 
-Aplikasi CRUD sederhana menggunakan **Laravel 12**. Cocok sebagai dasar pembelajaran atau template proyek sederhana.
+A simple CRUD (Create, Read, Update, Delete) application built with **Laravel 12**. Great as a learning base or simple project template.
 
-## Fitur
+## Features
 
-- Operasi CRUD lengkap
-- Validasi input
-- Pagination data
-- Template Blade
+- Full CRUD operations
+- Input validation
+- Data pagination
+- Blade templating
 
-## Cara Instalasi
+## Installation
 
 `ash
 git clone https://github.com/RifkyA911/Simple-CRUD-Laravel-12.git
